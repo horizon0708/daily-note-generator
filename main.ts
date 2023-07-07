@@ -10,6 +10,7 @@ import {
 } from "obsidian";
 import { DailyNoteGenerator } from "src/daily-note-generator";
 import { DailyNoteNavigator } from "src/daily-note-navigator";
+import { DailyNoteTickler } from "src/daily-note-tickler";
 
 // Remember to rename these classes and interfaces!
 
@@ -42,6 +43,10 @@ export default class MyPlugin extends Plugin {
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
 		statusBarItemEl.setText("Status Bar Text");
+		const setting = {
+			folder: "Daily",
+			dailyFormat: "YYYY/MM/YYYY-MM-DD",
+		};
 
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
@@ -60,10 +65,8 @@ export default class MyPlugin extends Plugin {
 			name: "Next Daily Note",
 			callback: async () => {
 				const path = this.app.workspace.activeEditor?.file?.path;
-				const nav = new DailyNoteNavigator(this.app, {
-					folder: "Daily",
-				});
-				nav.openOffsetDays(path, 1);
+				const nav = new DailyNoteNavigator(this.app, path, setting);
+				nav.openOffsetDays(1);
 			},
 		});
 
@@ -72,10 +75,23 @@ export default class MyPlugin extends Plugin {
 			name: "Previous Daily Note",
 			callback: async () => {
 				const path = this.app.workspace.activeEditor?.file?.path;
-				const nav = new DailyNoteNavigator(this.app, {
-					folder: "Daily",
-				});
-				nav.openOffsetDays(path, -1);
+				const nav = new DailyNoteNavigator(this.app, path, setting);
+				nav.openOffsetDays(-1);
+			},
+		});
+
+		this.addCommand({
+			id: "append-selection-one-month-later",
+			name: "Send Selection to one month Later",
+			editorCallback: async (editor: Editor, view: MarkdownView) => {
+				const selection = editor.getSelection();
+				if (!selection) {
+					return;
+				}
+				const path = view.file?.path;
+				const dnt = new DailyNoteTickler(this.app, path, setting);
+				await dnt.appendToDailyNote(selection);
+				console.log(selection);
 			},
 		});
 
