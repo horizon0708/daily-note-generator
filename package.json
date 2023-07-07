@@ -1,7 +1,7 @@
 {
-	"name": "daily-notes-generator",
-	"version": "1.0.0",
-	"description": "Plugin to generate daily notes in advance, sorted by month and year",
+	"name": "obsidian-daily-notes-gtd-helper",
+	"version": "0.0.1",
+	"description": "This is a personal plugin for GTD workflow in Obsidian. Not ready for general use yet.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
