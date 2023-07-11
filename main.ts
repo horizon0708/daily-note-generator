@@ -36,7 +36,7 @@ export default class DailyGTD extends Plugin {
 			callback: async () => {
 				const path = this.app.workspace.activeEditor?.file?.path;
 				const nav = new Navigator(this.app, path, DEFAULT_SETTINGS);
-				nav.openOffsetDays(1);
+				nav.openNextExistingFile(1);
 			},
 		});
 
@@ -46,7 +46,17 @@ export default class DailyGTD extends Plugin {
 			callback: async () => {
 				const path = this.app.workspace.activeEditor?.file?.path;
 				const nav = new Navigator(this.app, path, DEFAULT_SETTINGS);
-				nav.openOffsetDays(-1);
+				nav.openNextExistingFile(-1);
+			},
+		});
+
+		this.addCommand({
+			id: "create-and-open-next-daily-note",
+			name: "Create And Open Next Daily Note",
+			callback: async () => {
+				const path = this.app.workspace.activeEditor?.file?.path;
+				const nav = new Navigator(this.app, path, DEFAULT_SETTINGS);
+				nav.openOffsetDays(1);
 			},
 		});
 
@@ -104,7 +114,7 @@ export default class DailyGTD extends Plugin {
 					selection,
 					DEFAULT_SETTINGS
 				);
-				await dnt.preprendDate().appendToDailyNote();
+				await dnt.prependDate().appendToDailyNote();
 			},
 		});
 
@@ -125,13 +135,29 @@ export default class DailyGTD extends Plugin {
 					DEFAULT_SETTINGS
 				);
 
-				await dnt.preprendDate().appendToDailyNote();
+				await dnt.prependDate().appendToDailyNote();
 			},
 		});
 
 		this.addCommand({
 			id: "debug",
-			name: "Debug",
+			name: "Debug Normal",
+			callback: async () => {
+				const path = this.app.workspace.activeEditor?.file?.path;
+				const nav = new Navigator(this.app, path, DEFAULT_SETTINGS);
+				// const range = nav.getFirstAndLastDate();
+				// console.log(range?.map((x) => x.format("YYYY-MM-DD")));
+				// if (!range) {
+				// 	return;
+				// }
+				// const d = nav.getNextExistingFile(range, -1);
+				// console.log(d?.path);
+			},
+		});
+
+		this.addCommand({
+			id: "debug-editor",
+			name: "Debug Editor",
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
 				const cursor = editor.getCursor();
 				const selection = editor.getLine(cursor.line);

@@ -36,9 +36,13 @@ export class DailyNoteBase {
 		return file;
 	}
 
-	protected async createDailyNote(moment: Moment) {
+	protected getPathFromMoment(moment: Moment) {
 		const filepath = `${moment.format(this.settings.dailyFormat)}.md`;
-		const path = normalizePath(`${this.settings.folder}/${filepath}`);
+		return normalizePath(`${this.settings.folder}/${filepath}`);
+	}
+
+	protected async createDailyNote(moment: Moment) {
+		const path = this.getPathFromMoment(moment);
 		const file = this.app.vault.getAbstractFileByPath(path);
 
 		if (!(file instanceof TFile)) {

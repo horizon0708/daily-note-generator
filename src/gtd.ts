@@ -14,7 +14,7 @@ export class GTD extends DailyNoteBase {
 		this.text = text;
 	}
 
-	preprendDate() {
+	prependDate() {
 		const datestamp = this.today.format("YYYY-MM-DD");
 		this.text = `[[${datestamp}]]: ${this.text}`;
 		return this;
