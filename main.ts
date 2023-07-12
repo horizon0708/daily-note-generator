@@ -207,6 +207,7 @@ export default class DailyGTD extends Plugin {
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
 				const cursor = editor.getCursor();
 				const selection = editor.getLine(cursor.line);
+				const path = view.file?.path;
 			},
 		});
 		// TODO: Create setting tab

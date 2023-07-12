@@ -27,17 +27,14 @@ export class DailyNoteBase {
 				return;
 			}
 
-			// IMPROVEMENT: regex for YYYY-MM-DD instead?
-			// But this is more flexible with the custom formatting
-			const p = pathOrMoment.slice(this.settings.folder.length + 1, -3);
-			this.today = window.moment(p, this.settings.dailyFormat);
+			this.today = this.getMomentFromPath(pathOrMoment);
 			return;
 		}
 		this.today = pathOrMoment;
 	}
 
 	get isValid() {
-		return this.today.isValid();
+		return this.today?.isValid() ?? false;
 	}
 
 	get todayFile() {
@@ -48,6 +45,13 @@ export class DailyNoteBase {
 			return;
 		}
 		return file;
+	}
+
+	protected getMomentFromPath(path: string) {
+		// IMPROVEMENT: regex for YYYY-MM-DD instead?
+		// But this is more flexible with the custom formatting
+		const p = path.slice(this.settings.folder.length + 1, -3);
+		return window.moment(p, this.settings.dailyFormat);
 	}
 
 	protected getPathFromMoment(moment: Moment) {
