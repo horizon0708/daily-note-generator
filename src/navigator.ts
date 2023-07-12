@@ -54,7 +54,7 @@ export class Navigator extends DailyNoteBase {
 	}
 
 	private get dailyNotesDates() {
-		const dayRegex = /^[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]/;
+		const dayRegex = /^[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9].*\.md/;
 		const dailyNotes = this.app.vault
 			.getFiles()
 			.reduce((acc, file) => {
