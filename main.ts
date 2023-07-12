@@ -36,7 +36,27 @@ export default class DailyGTD extends Plugin {
 			callback: async () => {
 				const path = this.app.workspace.activeEditor?.file?.path;
 				const nav = new Navigator(this.app, path, DEFAULT_SETTINGS);
-				nav.openNextExistingFile(1);
+				nav.openNextExistingNote(1);
+			},
+		});
+
+		this.addCommand({
+			id: "open-tomorrow-daily-note",
+			name: "Open Tomorrow's Daily Note",
+			callback: () => {
+				const path = this.app.workspace.activeEditor?.file?.path;
+				const nav = new Navigator(this.app, path, DEFAULT_SETTINGS);
+				nav.openOffsetDays(1, window.moment());
+			},
+		});
+
+		this.addCommand({
+			id: "open-yesterday-daily-note",
+			name: "Open Yesterday's Daily Note",
+			callback: () => {
+				const path = this.app.workspace.activeEditor?.file?.path;
+				const nav = new Navigator(this.app, path, DEFAULT_SETTINGS);
+				nav.openOffsetDays(-1, window.moment());
 			},
 		});
 
@@ -46,7 +66,7 @@ export default class DailyGTD extends Plugin {
 			callback: async () => {
 				const path = this.app.workspace.activeEditor?.file?.path;
 				const nav = new Navigator(this.app, path, DEFAULT_SETTINGS);
-				nav.openNextExistingFile(-1);
+				nav.openNextExistingNote(-1);
 			},
 		});
 
@@ -81,7 +101,7 @@ export default class DailyGTD extends Plugin {
 
 		this.addCommand({
 			id: "append-line-tomorrow",
-			name: "Send Line to Tomorrow",
+			name: "Send line to Tomorrow",
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
 				const cursor = editor.getCursor();
 				const selection = editor.getLine(cursor.line);
@@ -95,13 +115,35 @@ export default class DailyGTD extends Plugin {
 					selection,
 					DEFAULT_SETTINGS
 				);
-				await dnt.appendToDailyNote({ day: 1 });
+				await dnt
+					.prependDate()
+					.appendToDailyNote({ day: 1 }, window.moment());
+			},
+		});
+
+		this.addCommand({
+			id: "append-line-next-day",
+			name: "Send line to next day from this note",
+			editorCallback: async (editor: Editor, view: MarkdownView) => {
+				const cursor = editor.getCursor();
+				const selection = editor.getLine(cursor.line);
+				if (!selection) {
+					return;
+				}
+				const path = view.file?.path;
+				const dnt = new GTD(
+					this.app,
+					path,
+					selection,
+					DEFAULT_SETTINGS
+				);
+				await dnt.prependDate().appendToDailyNote({ day: 1 });
 			},
 		});
 
 		this.addCommand({
 			id: "append-selection-one-month-later",
-			name: "Send Selection to one month later",
+			name: "Send Selection to one month later from today",
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				if (!selection) {
@@ -114,13 +156,15 @@ export default class DailyGTD extends Plugin {
 					selection,
 					DEFAULT_SETTINGS
 				);
-				await dnt.prependDate().appendToDailyNote();
+				await dnt
+					.prependDate()
+					.appendToDailyNote({ month: 1 }, window.moment());
 			},
 		});
 
 		this.addCommand({
 			id: "append-line-one-month-later",
-			name: "Send Line to one month later",
+			name: "Send Line to one month later from today",
 			editorCallback: async (editor: Editor, view: MarkdownView) => {
 				const cursor = editor.getCursor();
 				const selection = editor.getLine(cursor.line);
@@ -135,7 +179,9 @@ export default class DailyGTD extends Plugin {
 					DEFAULT_SETTINGS
 				);
 
-				await dnt.prependDate().appendToDailyNote();
+				await dnt
+					.prependDate()
+					.appendToDailyNote({ month: 1 }, window.moment());
 			},
 		});
 

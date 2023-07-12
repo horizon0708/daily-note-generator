@@ -1,29 +1,43 @@
 import { Moment } from "moment";
-import { App, TFile, TFolder, normalizePath } from "obsidian";
+import { App, Notice, TFile, TFolder, normalizePath } from "obsidian";
 
 export class DailyNoteBase {
 	protected app: App;
 	protected settings: any;
 	protected path?: string;
 	protected today: Moment;
-	public isValid: boolean = false;
 	public message: string = "";
 
-	constructor(app: App, path: string | undefined, settings: any) {
+	constructor(
+		app: App,
+		pathOrMoment: string | Moment | undefined,
+		settings: any
+	) {
 		this.app = app;
-		this.path = path;
 		this.settings = settings;
-
-		if (!path || !path.startsWith(this.settings.folder)) {
-			this.message = "Not a daily note";
+		if (!pathOrMoment) {
+			this.message = "invalid path or moment";
 			return;
 		}
 
-		// IMPROVEMENT: regex for YYYY-MM-DD instead?
-		// But this is more flexible with the custom formatting
-		const p = path.slice(this.settings.folder.length + 1, -3);
-		this.today = window.moment(p, this.settings.dailyFormat);
-		this.isValid = this.today.isValid();
+		if (typeof pathOrMoment === "string") {
+			this.path = pathOrMoment;
+			if (!pathOrMoment.startsWith(this.settings.folder)) {
+				this.message = "Not a daily note";
+				return;
+			}
+
+			// IMPROVEMENT: regex for YYYY-MM-DD instead?
+			// But this is more flexible with the custom formatting
+			const p = pathOrMoment.slice(this.settings.folder.length + 1, -3);
+			this.today = window.moment(p, this.settings.dailyFormat);
+			return;
+		}
+		this.today = pathOrMoment;
+	}
+
+	get isValid() {
+		return this.today.isValid();
 	}
 
 	get todayFile() {
@@ -49,6 +63,9 @@ export class DailyNoteBase {
 			// IMPROVEMENT: apply template?
 			await this.createFolder(moment);
 			const file = await this.app.vault.create(path, "");
+			new Notice(
+				"Created daily note for " + moment.format("YYYY-MM-DD") + "."
+			);
 			return file;
 		}
 		return file;

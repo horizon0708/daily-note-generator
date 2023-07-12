@@ -7,13 +7,13 @@ export class Navigator extends DailyNoteBase {
 		super(app, path, settings);
 	}
 
-	async openOffsetDays(offsetDays: number) {
-		const nextMoment = this.today.clone().add(offsetDays, "day");
+	async openOffsetDays(offsetDays: number, from = this.today) {
+		const nextMoment = from.clone().add(offsetDays, "day");
 		let file = await this.createDailyNote(nextMoment);
 		this.app.workspace.getMostRecentLeaf()?.openFile(file);
 	}
 
-	openNextExistingFile(offset: 1 | -1) {
+	openNextExistingNote(offset: 1 | -1) {
 		const range = this.getFirstAndLastDate();
 		if (!range) {
 			new Notice(`Could not find any daily notes`);
