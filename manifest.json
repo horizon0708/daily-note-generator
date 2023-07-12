@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-daily-notes-gtd-helper",
 	"name": "Daily Notes GTD",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"minAppVersion": "0.15.0",
 	"description": "This is a personal plugin for GTD workflow in Obsidian. Not ready for general use yet.",
 	"author": "James Kim",
